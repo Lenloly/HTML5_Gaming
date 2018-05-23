@@ -1,5 +1,5 @@
 
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'myGame', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 
@@ -8,6 +8,8 @@ function preload() {
     game.load.image('floor', 'asset/image/floor.png');
     game.load.image('background', 'asset/image/sky2.jpg');
     game.load.image('background2', 'asset/image/sky3.png');
+    game.load.image('background3', 'asset/image/sky4.png');
+    game.load.image('background4', 'asset/image/sky.png');
 
 }
 
@@ -39,6 +41,7 @@ function create() {
     player.scale.setTo(1.5, 1.5);
 
     game.physics.enable(player, Phaser.Physics.ARCADE);
+    game.physics.enable(floor, Phaser.Physics.ARCADE);
 
     player.body.collideWorldBounds = true;
     player.body.gravity.y = 1000;
@@ -109,8 +112,15 @@ function update() {
     if (jumpButton.isDown && player.body.onFloor()) {
         jumpMany++;
     }
-    if (jumpMany === 5) {
+
+    if (jumpMany === 1) {
         bg.loadTexture('background2');
+    }
+    if (jumpMany === 2) {
+        bg.loadTexture('background3');
+    }
+    if (jumpMany === 3) {
+        bg.loadTexture('background4');
     }
 
 
