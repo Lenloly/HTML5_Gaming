@@ -26,20 +26,18 @@ function create() {
 
     // Set le background de base à l'emplacement 0 0 et de dimension 800x600
     bg = game.add.tileSprite(0, 0, 800, 600, "background");
-    // Set le sol de base à l'emplacement 0 0
-    floor = game.add.image(0, 578, 'floor');
-    floor = game.add.image(102, 578, 'floor');
-    floor = game.add.image(204, 578, 'floor');
-    floor = game.add.image(306, 578, 'floor');
-    floor = game.add.image(408, 578, 'floor');
-    floor = game.add.image(510, 578, 'floor');
-    floor = game.add.image(612, 578, 'floor');
-    floor = game.add.image(714, 578, 'floor');
+
+    // Set le sol de base à l'emplacement i (une frame du sol fait 102px, 714px = taille pour mettre du sol sur tout l'écran)
+    for (var i = 0; i <= 714; i = i + 102) {
+        floor = game.add.image(i, 568, 'floor');
+    }
 
     game.physics.arcade.gravity.y = 300;
 
 
     player = game.add.sprite(200, 340, 'dude');
+    player.scale.setTo(1.5, 1.5);
+
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.collideWorldBounds = true;
