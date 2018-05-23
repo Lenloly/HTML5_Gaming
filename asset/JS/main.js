@@ -3,9 +3,12 @@ var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload:
 
 function preload() {
 
-    game.load.spritesheet('dude', 'asset/image/rogue.png', 32, 33);
-    game.load.image('background', 'asset/image/sky3.png');
-    game.load.image('background2', 'asset/image/sky2.jpg');
+    game.load.spritesheet('dude', 'asset/image/rogue.png', 32, 33, 100);
+    game.load.spritesheet('platform', 'asset/image/A_World_01.png', 32, 33);
+    game.load.spritesheet('floor2', 'asset/image/A_World_01.png', 410, 330);
+    game.load.image('floor', 'asset/image/A_World_01.png');
+    game.load.image('background', 'asset/image/sky2.jpg');
+    game.load.image('background2', 'asset/image/sky3.png');
 
 }
 
@@ -16,14 +19,19 @@ var jumpMany = 0;
 var cursors;
 var jumpButton;
 var bg;
+var floor;
 
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
+    // Set le background de base à l'emplacement 0 0 et de dimension 800x600
     bg = game.add.tileSprite(0, 0, 800, 600, "background");
+    // Set le sol de base à l'emplacement 0 0
+    floor = game.add.image(0, 0, 'floor2');
 
     game.physics.arcade.gravity.y = 300;
+
 
     player = game.add.sprite(200, 340, 'dude');
     game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -92,14 +100,16 @@ function update() {
         player.body.velocity.y = -500;
         jumpTimer = game.time.now + 750;
     }
+
+
     if (jumpButton.isDown && player.body.onFloor()) {
         jumpMany++;
     }
     if (jumpMany === 5) {
-        bg = game.add.tileSprite(0, 0, 800, 600, 'background2');
-
-        create();
+        bg.loadTexture('background2');
     }
+
+
 }
 
 function render () {
