@@ -5,8 +5,7 @@ function preload() {
 
     game.load.spritesheet('dude', 'asset/image/rogue.png', 32, 33, 100);
     game.load.spritesheet('platform', 'asset/image/A_World_01.png', 32, 33);
-    game.load.spritesheet('floor2', 'asset/image/A_World_01.png', 410, 330);
-    game.load.image('floor', 'asset/image/A_World_01.png');
+    game.load.image('floor', 'asset/image/floor.png');
     game.load.image('background', 'asset/image/sky2.jpg');
     game.load.image('background2', 'asset/image/sky3.png');
 
@@ -28,7 +27,14 @@ function create() {
     // Set le background de base à l'emplacement 0 0 et de dimension 800x600
     bg = game.add.tileSprite(0, 0, 800, 600, "background");
     // Set le sol de base à l'emplacement 0 0
-    floor = game.add.image(0, 0, 'floor2');
+    floor = game.add.image(0, 578, 'floor');
+    floor = game.add.image(102, 578, 'floor');
+    floor = game.add.image(204, 578, 'floor');
+    floor = game.add.image(306, 578, 'floor');
+    floor = game.add.image(408, 578, 'floor');
+    floor = game.add.image(510, 578, 'floor');
+    floor = game.add.image(612, 578, 'floor');
+    floor = game.add.image(714, 578, 'floor');
 
     game.physics.arcade.gravity.y = 300;
 
