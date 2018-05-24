@@ -1,79 +1,49 @@
-
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'myGame', { preload: preload, create: create, update: update, render: render, addTile: addTile, addPlatform: addPlatform, initPlatforms: initPlatforms });
+var game = new Phaser.Game(500, 900, Phaser.CANVAS, 'myGame', {
+    preload: preload, create: create, update: update, render: render, addTile: addTile,
+    addPlatform: addPlatform, initPlatforms: initPlatforms, createPlayer: createPlayer,
+    gameOver: gameOver, createScore: createScore,incrementScore: incrementScore
+});
 
 function preload() {
 
-    game.load.spritesheet('dude', 'asset/image/rogue.png', 32, 33, 100);
-    game.load.spritesheet('platform', 'asset/image/A_World_01.png', 32, 33);
-    game.load.image('floor', 'asset/image/floor.png');
-    game.load.image('floor2', 'asset/image/floor2.png');
-    game.load.image('floor3', 'asset/image/floor3.png');
-    game.load.image('background', 'asset/image/sky2.jpg');
-    game.load.image('background2', 'asset/image/sky3.png');
-    game.load.image('background3', 'asset/image/sky5.png');
-    game.load.image('background4', 'asset/image/sky4.png');
+    this.game.load.image('tile', 'asset/image/floor.png');
+    this.game.load.image('player', 'asset/image/player.png',);
+    this.game.state.start("myGame");
 
 }
 
 var player;
-var facing = 'left';
-var jumpTimer = 0;
-var jumpMany = 0;
 var cursors;
-var jumpButton;
-var bg;
 var floor;
 
 function create() {
     var me = this;
 
+    me.tileWidth = me.game.cache.getImage('tile').width;
+    me.tileHeight = me.game.cache.getImage('tile').height;
+
+
+    me.game.stage.backgroundColor = '479cde';
+
     me.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-    // Set le background de base à l'emplacement 0 0 et de dimension 800x600
-    bg = me.game.add.tileSprite(0, 0, 800, 600, "background");
-
-    // Set le sol de base à l'emplacement i (une frame du sol fait 102px, 714px = taille pour mettre du sol sur tout l'écran)
-    // for (var i = 0; i <= 714; i = i + 102) {
-    //     floor = game.add.image(i, 568, 'floor');
-    // }
-    me.tileWidth = me.game.cache.getImage('floor').width;
-    me.tileHeight = me.game.cache.getImage('floor').height;
 
     me.platforms = me.game.add.group();
     me.platforms.enableBody = true;
-    me.platforms.createMultiple(25, 'floor');
+    me.platforms.createMultiple(200, 'tile');
+    me.timer = game.time.events.loop(2000, me.addPlatform, me);
+    me.createPlayer();
 
-    me.game.physics.arcade.gravity.y = 30;
+    me.cursors = me.game.input.keyboard.createCursorKeys();
+    me.score = 0;
 
-
-    player = me.game.add.sprite(200, 340, 'dude');
-    player.scale.setTo(1.5, 1.5);
-
-    me.game.physics.enable(player, Phaser.Physics.ARCADE);
-
-    player.body.collideWorldBounds = true;
-    player.body.gravity.y = 1000;
-    player.body.maxVelocity.y = 500;
-    player.body.setSize(20, 32, 5, 16);
-
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('turn', [4], 20, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
-
-    cursors = me.game.input.keyboard.createCursorKeys();
-    jumpButton = me.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-    me.timer = me.game.time.events.loop(2000, me.addPlatform, me);
-
-    //The spacing for the initial platforms
-    me.spacing = 300;
-
-//Create the inital on screen platforms
+    me.createScore();
+    me.spacing = 200;
     me.initPlatforms();
-
+    me.score = 0;
+    me.createScore();
 }
 
-function addTile(x, y){
+function addTile(x, y) {
 
     var me = this;
 
@@ -90,7 +60,7 @@ function addTile(x, y){
     tile.outOfBoundsKill = true;
 }
 
-function addPlatform(y){
+function addPlatform(y) {
 
     var me = this;
 
@@ -112,10 +82,14 @@ function addPlatform(y){
             this.addTile(i * me.tileWidth, y);
         }
     }
-
+    if(typeof(y) == "undefined"){
+        y = -me.tileHeight;
+        //Increase the players score
+        me.incrementScore();
+    }
 }
 
-function initPlatforms(){
+function initPlatforms() {
 
     var me = this,
         bottom = me.game.world.height - me.tileHeight,
@@ -128,84 +102,77 @@ function initPlatforms(){
 
 }
 
-function update() {
+function createPlayer() {
 
-    // game.physics.arcade.collide(player, layer);
+    var me = this;
 
-    player.body.velocity.x = 0;
+    //Add the player to the game by creating a new sprite
+    me.player = me.game.add.sprite(me.game.world.centerX, me.game.world.height - (me.spacing * 2 + (3 * me.tileHeight)), 'player');
 
-    if (cursors.left.isDown)
-    {
-        player.body.velocity.x = -150;
+    //Set the players anchor point to be in the middle horizontally
+    me.player.anchor.setTo(0.5, 1.0);
 
-        if (facing != 'left')
-        {
-            player.animations.play('left');
-            facing = 'left';
-        }
-    }
-    else if (cursors.right.isDown)
-    {
-        player.body.velocity.x = 150;
+    //Enable physics on the player
+    me.game.physics.arcade.enable(me.player);
 
-        if (facing != 'right')
-        {
-            player.animations.play('right');
-            facing = 'right';
-        }
-    }
-    else
-    {
-        if (facing != 'idle')
-        {
-            player.animations.stop();
+    //Make the player fall by applying gravity
+    me.player.body.gravity.y = 2000;
 
-            if (facing == 'left')
-            {
-                player.frame = 0;
-            }
-            else
-            {
-                player.frame = 5;
-            }
+    //Make the player collide with the game boundaries
+    me.player.body.collideWorldBounds = true;
 
-            facing = 'idle';
-        }
-    }
-
-    if (jumpButton.isDown && player.body.onFloor() && game.time.now > jumpTimer)
-    {
-        player.body.velocity.y = -500;
-        jumpTimer = game.time.now + 750;
-    }
-
-
-    if (jumpButton.isDown && player.body.onFloor()) {
-        jumpMany++;
-    }
-
-    if (jumpMany === 1) {
-        bg.loadTexture('background2');
-        // platforms.loadTexture('floor2');
-        // floor.loadTexture('floor2');
-        // // for (var i = 0; i <= 714; i = i + 102) {
-        // //     floor = game.add.image(i, 568, 'floor2');
-        // // }
-    }
-    if (jumpMany === 2) {
-        bg.loadTexture('background3');
-        // for (var i = 0; i <= 714; i = i + 102) {
-        //     floor = game.add.image(i, 557, 'floor3');
-        // }
-    }
-    if (jumpMany === 3) {
-        bg.loadTexture('background4');
-    }
-
+    //Make the player bounce a little
+    me.player.body.bounce.y = 0.1;
 
 }
 
-function render () {
+function gameOver() {
+    this.game.state.start('myGame');
+}
+
+function createScore() {
+    var me = this;
+    var scoreFont = "100px Arial";
+    me.scoreLabel = me.game.add.text((me.game.world.centerX), 100, "0", {font: scoreFont, fill: "#fff"});
+    me.scoreLabel.anchor.setTo(0.5, 0.5);
+    me.scoreLabel.align = 'center';
+
+}
+
+function incrementScore () {
+
+    var me = this;
+
+    me.score += 1;
+    me.scoreLabel.text = me.score;
+
+}
+
+function update() {
+    var me = this;
+
+    //Make the sprite collide with the ground layer
+    me.game.physics.arcade.collide(me.player, me.platforms);
+
+
+    //Check if the player is touching the bottom
+    if(me.player.body.position.y >= me.game.world.height - me.player.body.height){
+        me.gameOver();
+    }
+    if(me.cursors.up.isDown && me.player.body.wasTouching.down) {
+        me.player.body.velocity.y = -1400;
+    }
+//Make the player go left
+    if(me.cursors.left.isDown){
+        me.player.body.velocity.x += -30;
+    }
+//Make the player go right
+    if(me.cursors.right.isDown){
+        me.player.body.velocity.x += 30;
+    }
+}
+
+function render() {
 
     // game.debug.text(game.time.physicsElapsed, 32, 32);
     // game.debug.body(player);
