@@ -184,22 +184,23 @@ function update() {
         jumpMany++;
     }
 
-    // if (jumpMany === 1) {
-    //     bg.loadTexture('background2');
-    //     floor.loadTexture('floor2');
-    //     // for (var i = 0; i <= 714; i = i + 102) {
-    //     //     floor = game.add.image(i, 568, 'floor2');
-    //     // }
-    // }
-    // if (jumpMany === 2) {
-    //     bg.loadTexture('background3');
-    //     for (var i = 0; i <= 714; i = i + 102) {
-    //         floor = game.add.image(i, 557, 'floor3');
-    //     }
-    // }
-    // if (jumpMany === 3) {
-    //     bg.loadTexture('background4');
-    // }
+    if (jumpMany === 1) {
+        bg.loadTexture('background2');
+        // platforms.loadTexture('floor2');
+        // floor.loadTexture('floor2');
+        // // for (var i = 0; i <= 714; i = i + 102) {
+        // //     floor = game.add.image(i, 568, 'floor2');
+        // // }
+    }
+    if (jumpMany === 2) {
+        bg.loadTexture('background3');
+        // for (var i = 0; i <= 714; i = i + 102) {
+        //     floor = game.add.image(i, 557, 'floor3');
+        // }
+    }
+    if (jumpMany === 3) {
+        bg.loadTexture('background4');
+    }
 
 
 }
